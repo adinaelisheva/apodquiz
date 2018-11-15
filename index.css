@@ -1,0 +1,24 @@
+.hidden {
+  display: none;
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+}
+
+iframe {
+  border: 1px solid #aaa;
+  padding: 1px;
+  margin-right: 10px;
+}
+
+h1 {
+  font-family: 'Bubblegum Sans', sans-serif;
+  text-align: center;
+  color: #252565;
+}
+
+.question {
+  margin: 20px 0;
+}
