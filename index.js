@@ -14,7 +14,7 @@
     document.querySelector('.finished').classList.remove('invisible');
     const date = new Date();
     date.setTime(date.getTime() + (2*24*60*60*1000)); // Expire in 2 days from now
-    const expires = `expires=${d.toUTCString()};`
+    const expires = `expires=${date.toUTCString()};`
     // value is today's date as a string
     let m = date.getMonth();
     m = m.length < 2 ? `0${m}` : m;
