@@ -37,12 +37,28 @@ def isValidSentence(s)
   return true
 end
 
+def isValidQuestion(q)
+  if not q or q.split(" ").length <= 5
+    return false
+  end
+  badTerms = ["StellaNavigator","for Windows","your comment data"]
+  badTerms.each { |b| 
+    if q.include?(b)
+      return false
+    end
+  }
+  return true
+end
+
 def createQuestions(text)
   decimalRegex = /\b-?[0-9,]+\.?[0-9]*\b/
   questions = []
   # scan for any punctuation, followed by space, followed by a capital letter, 
   # followed by stuff, followed by more punctuation and a space
   scanRegex = /[.!>,;] +[A-Z][A-z0-9., '-()]*?[.!:;] /
+  
+  # Regexes don't allow for overlap, so have to scan for each sentence one at 
+  # a time, then chop it off the front of the text
   while text.length > 0
     sentence = text[scanRegex, 0]
     sIndex = text.index(scanRegex)
@@ -51,7 +67,7 @@ def createQuestions(text)
     end
     s = sentence[2...sentence.length-2]
     head = ""
-    conjunctions = ["when", "and", "but", "because", "since", "if"]
+    conjunctions = ["when", "and", "but", "because", "since", "if", "with"]
     conjunctions.each { |c|
       if s.downcase().start_with?(c)
         len = c.length + 1 #add 1 for a space
@@ -61,28 +77,15 @@ def createQuestions(text)
     }
     if (isValidSentence(s))
       s.gsub!(/ +/, " ")
-      copulaInd = s.index(/\bis\b/)
-      copulaLen = 2
-      if (not copulaInd)
-        copulaInd = s.index(/\bare\b/)
-        copulaLen = 3
-      end
-      if (not copulaInd)
-        copulaInd = s.index(/\bwas\b/)
-        copulaLen = 3
-      end
-      if (not copulaInd)
-        copulaInd = s.index(/\bwere\b/)
-        copulaLen = 4
-      end
-      if (not copulaInd)
-        copulaInd = s.index(/\bshould\b/)
-        copulaLen = 6
-      end
-      if (not copulaInd)
-        copulaInd = s.index(/\bshould be\b/)
-        copulaLen = 9
-      end
+      copulas = ["is","are","was","were","will be","should","should be"]
+      copulaInd = nil
+      copulaLen = 0
+      copulas.each { |c|
+        if not copulaInd
+          copulaInd = s.index(/\b#{c}\b/)
+          copulaLen = c.length
+        end
+      }
       if (copulaInd)
         part1 = s[0...copulaInd]
         part2 = s[copulaInd + copulaLen...s.length]
@@ -96,6 +99,7 @@ def createQuestions(text)
           answer = part2
         end
       end
+
       # TODO: support ordinal numbers
       decimalInd = s.index(decimalRegex)
       if (not question and decimalInd)
@@ -105,11 +109,7 @@ def createQuestions(text)
         question = "#{head}#{part1}_____#{part2}"
         answer = decimal
       end
-      if (question and 
-          question.split(" ").length > 5 and
-          not question.include?("StellaNavigator") and
-          not question.include?("for Windows") and
-          not question.include?("your comment data"))
+      if (isValidQuestion(question))
         questions.push([question, answer])
       end
       question = nil
