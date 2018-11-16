@@ -23,10 +23,13 @@
   const completeQuiz = () => {
     document.querySelector('.finished').classList.remove('invisible');
     const date = new Date();
-    date.setTime(date.getTime() + (2*24*60*60*1000)); // Expire in 2 days from now
-    const expires = date.toUTCString();
+
     // value is today's date as a string
     const completed = getMiniDateStr(date);
+    
+    date.setTime(date.getTime() + (2*24*60*60*1000)); // Expire in 2 days from now
+    const expires = date.toUTCString();
+    
     document.cookie = `${cookiename}=${completed};expires=${expires};path=/`;
   };
 
