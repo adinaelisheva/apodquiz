@@ -90,7 +90,7 @@
       input.setAttribute('style', `width:${width}px;`);
 
       if (quizAlreadyCompleted) {
-        input.innerHTML = decode(answer);
+        input.value = decode(answer);
         completeQuestion(input);
       } else {
         // No point in setting a listener if the input is already completed
