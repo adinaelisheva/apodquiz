@@ -117,10 +117,6 @@ def createQuestions(text)
     end
     text = text[sIndex+sentence.length-2...text.length]
   end
-  #TODO: sort on a score (decimals are good, the longer the better. Words can be good... somehow?)
   questions.sort { |a, b| b[0].length <=> a[0].length }
-  if (questions.length < 4) 
-    return questions
-  end
-  return [questions[0], questions[1], questions[2]]
+  return questions
 end

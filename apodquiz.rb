@@ -25,7 +25,7 @@ explanation.gsub(/\n/,"").scan(/<a href="([^"]+)">/) {|link|
 
 puts "found #{links.length} links"
 
-all = []
+questionsBySite = []
 
 def grabQuestions(text)
   text = removeExtraneousStuff(text)
@@ -44,7 +44,7 @@ questions = grabQuestions(explanation)
 puts "found #{questions.length} questions"
 if (questions.length > 0) 
   puts "adding 1"
-  all.push(questions[0])
+  questionsBySite.push([questions[0]])
 end
 
 # For each explanation, grab some text if there is any
@@ -59,7 +59,34 @@ links.each.with_index {|url, ind|
     text = /<body(.|\n)*<\/body[^>]*>/i.match(content)[0]
   end
 
-  all = all.concat(grabQuestions(text)) 
+  questions = grabQuestions(text)
+  if (questions.length > 0) 
+    questionsBySite.push(questions)
+  end
 }
 
-print(apodUrl, links, all)
+# The goal here is to get at least 1 question from every site that I can, and then to get up to 10
+# questions if possible. If there are more than 10 sites, there will be more than 10 questions. If 
+# there are less than 10 questions total from all sites then we'll only show the ones we have. In 
+# all cases this tries to draw the questions as evenly from all sites as possible, and they will be
+# mixed up together.
+finalList = []
+questionsBySite.each { |list|
+  finalList.push(list.pop())
+}
+
+if finalList.length < 10
+  numLeft = questionsBySite.inject(0) {|sum, l| sum + l.length }
+  #don't have quite 10 questions, keep adding some
+  ind = 0
+  while numLeft > 0 and finalList.length < 10
+    q = questionsBySite[ind].pop()
+    if q 
+      finalList.push(q)
+      numLeft = numLeft-1
+    end
+    ind = (ind + 1) % questionsBySite.length
+  end
+end
+
+print(apodUrl, links, finalList)
