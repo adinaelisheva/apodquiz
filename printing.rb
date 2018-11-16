@@ -31,6 +31,7 @@ def print(apodUrl, links, questions)
   output << "<div class=\"score\"><span class=\"num\">0</span> of <span class=\"whole\"></span></div>"
   output << "<div class=\"finished invisible\">100%!</div>"
 
+  output << "<div class=\"questions\">"
   questions.each { |q|
     query = q[0]
     answer = q[1]
@@ -41,7 +42,7 @@ def print(apodUrl, links, questions)
     output << "</div>"
   }
 
-  output << "</div></div>"
+  output << "</div></div></div>"
 
   output << "</body></html>"
 

@@ -55,6 +55,15 @@ h1 {
   font-weight:bold;
 }
 
+.questions {
+  height: 485px;
+  overflow: auto;
+}
+
+.question:first-child {
+  margin-top: 0;
+}
+
 .question {
   margin: 20px 0;
 }
