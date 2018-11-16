@@ -21,6 +21,22 @@ def removeExtraneousStuff(text)
   return retText
 end
 
+def isValidSentence(s)
+  s = s.downcase()
+  if (s.length < 20 or 
+      s.length > 300 or 
+      s.include?("   "))
+    return false
+  end
+  badstarts = ["it", "he", "she", "they", "this", "that", "there", "these", "those"]
+  badstarts.each { |b|
+    if s.start_with?(b)
+      return false
+    end
+  }
+  return true
+end
+
 def createQuestions(text)
   decimalRegex = /\b-?[0-9,]+\.?[0-9]*\b/
   questions = []
@@ -34,21 +50,17 @@ def createQuestions(text)
       break
     end
     s = sentence[2...sentence.length-2]
-    if (s.length > 20 and 
-        s.length < 300 and 
-        not s.include?("   ") and 
-        not s.start_with?("It") and 
-        not s.start_with?("He") and 
-        not s.start_with?("She") and 
-        not s.start_with?("They") and 
-        not s.start_with?("This") and 
-        not s.start_with?("That") and 
-        not s.start_with?("There") and 
-        not s.start_with?("These") and 
-        not s.start_with?("Those"))
+    head = ""
+    conjunctions = ["when", "and", "but", "because", "since", "if"]
+    conjunctions.each { |c|
+      if s.downcase().start_with?(c)
+        len = c.length + 1 #add 1 for a space
+        head = s[0...len]
+        s = s[len...s.length]
+      end
+    }
+    if (isValidSentence(s))
       s.gsub!(/ +/, " ")
-      # TODO: add a thing where if a sentence starts with a conjunction (When, And, But, Because, Since, If, etc) just
-      # skip them in your counting. Eg "Because hydrogen is awesome" --> "Because ___ is awesome"
       copulaInd = s.index(/\bis\b/)
       copulaLen = 2
       if (not copulaInd)
@@ -77,10 +89,10 @@ def createQuestions(text)
         len1 = part1.split(" ").length
         len2 = part2.split(" ").length
         if (len1 < 5 and not part1.include?(","))
-          question = "_____ #{s[copulaInd...s.length]}"
+          question = "#{head}_____ #{s[copulaInd...s.length]}"
           answer = part1
         elsif (len2 < 5 and not part2.include?(","))
-          question = "#{s[0..copulaInd + copulaLen]} _____."
+          question = "#{head}#{s[0..copulaInd + copulaLen]} _____."
           answer = part2
         end
       end
@@ -90,7 +102,7 @@ def createQuestions(text)
         decimal = s.match(decimalRegex)[0]
         part1 = s[0...decimalInd]
         part2 = s[decimalInd + decimal.length...s.length]
-        question = part1 + "_____" + part2
+        question = "#{head}#{part1}_____#{part2}"
         answer = decimal
       end
       if (question and 
@@ -106,7 +118,7 @@ def createQuestions(text)
     text = text[sIndex+sentence.length-2...text.length]
   end
   #TODO: sort on a score (decimals are good, the longer the better. Words can be good... somehow?)
-  questions.sort { |a, b| a[0].length <=> b[0].length }
+  questions.sort { |a, b| b[0].length <=> a[0].length }
   if (questions.length < 4) 
     return questions
   end
