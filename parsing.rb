@@ -51,7 +51,7 @@ def isValidQuestion(q)
 end
 
 def createQuestions(text)
-  decimalRegex = /\b-?[0-9,]+\.?[0-9]*\b/
+  decimalRegex = /\b-?[0-9,]+\.?[0-9]*(st|nd|rd|th)?\b/
   questions = []
   # scan for any punctuation, followed by space, followed by a capital letter, 
   # followed by stuff, followed by more punctuation and a space
