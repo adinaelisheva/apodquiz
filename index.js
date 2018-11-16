@@ -10,6 +10,20 @@
     return str.split('').map(translate).join('');
   }
 
+  const completeQuiz = () => {
+    document.querySelector('.finished').classList.remove('invisible');
+    const date = new Date();
+    date.setTime(date.getTime() + (2*24*60*60*1000)); // Expire in 2 days from now
+    const expires = `expires=${d.toUTCString()};`
+    // value is today's date as a string
+    let m = date.getMonth();
+    m = m.length < 2 ? `0${m}` : m;
+    let d = date.getDate();
+    d = d.length < 2 ? `0${d}` : d; 
+    const completed = `${m}-${d}-${date.getFullYear()}`;
+    document.cookie = `lastcompleted=${completed};${expires};path=/`;
+  };
+
   const verifyAnswer = (e) => {
     const input = e.target;
     const answer = input.parentElement.querySelector('.answer');
@@ -21,7 +35,7 @@
       score.querySelector('span.num').innerHTML = completed;
     }
     if (completed >= numQs) {
-      document.querySelector('.finished').classList.remove('invisible');
+      completeQuiz();
     }
   };
 
