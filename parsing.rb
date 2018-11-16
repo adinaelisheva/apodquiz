@@ -26,11 +26,11 @@ def createQuestions(text)
   questions = []
   # scan for any punctuation, followed by space, followed by a capital letter, 
   # followed by stuff, followed by more punctuation and a space
-  text.scan(/[.!>,;] [A-Z][A-z0-9., '-()]*?[.!] /) { |s| 
-    s = s[2...s.length]
+  text.scan(/[.!>,;] [A-Z][A-z0-9., '-()]*?[.!:;] /) { |s| 
+    s = s[2...s.length-2]
     if (s.length > 20 and 
       s.length < 300 and 
-      not s.include?("  ") and 
+      not s.include?("   ") and 
       not s.start_with?("It") and 
       not s.start_with?("He") and 
       not s.start_with?("She") and 

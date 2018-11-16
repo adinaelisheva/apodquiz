@@ -7,7 +7,13 @@
       input.setAttribute('style',style + 'color:#87d414;font-weight:bold');
       input.setAttribute('disabled','true');
     }
-  }
+  };
+
+  const openAllLinks = () => {
+    document.querySelectorAll('a.link.hidden').forEach((link) => {
+      window.open(link.getAttribute('href'));
+    })
+  };
 
   window.onload = () => {
     document.querySelectorAll('input.blank').forEach((input) => {
@@ -17,8 +23,11 @@
       const width = Math.max(40, answer.length*10);
       input.setAttribute('style', `width:${width}px;`);
       input.onkeyup = (e) => { verifyAnswer(e); };
-    })
+    });
+    document.querySelector('.openlinks').onclick = () => {
+      openAllLinks();
+    };
     document.querySelector('.quiz').classList.remove('hidden');
-  }
+  };
 
 })();

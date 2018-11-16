@@ -13,6 +13,17 @@ iframe {
   margin-right: 10px;
 }
 
+.openlinks {
+  margin: 10px 0;
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.openlinks:active {
+  color: red;
+}
+
 h1 {
   font-family: 'Bubblegum Sans', sans-serif;
   text-align: center;
