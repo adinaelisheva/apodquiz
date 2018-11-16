@@ -11,7 +11,7 @@
   };
   
   const getMiniDateStr = (date) => {
-    let m = date.getMonth();
+    let m = date.getMonth() + 1;
     m = m.length < 2 ? `0${m}` : m;
     let d = date.getDate();
     d = d.length < 2 ? `0${d}` : d; 
