@@ -3,10 +3,17 @@
   let completed = 0;
   let numQs;
 
+  const input = 'nopqrstuvwxyz0123456789abcdefghijklm';
+  const output = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const decode = (str) => {
+    var translate = x => input.indexOf(x) > -1 ? output[input.indexOf(x)] : x;
+    return str.split('').map(translate).join('');
+  }
+
   const verifyAnswer = (e) => {
     const input = e.target;
     const answer = input.parentElement.querySelector('.answer');
-    if (input.value.toLowerCase() === answer.innerText.toLowerCase()) {
+    if (input.value.toLowerCase() === decode(answer.innerText.toLowerCase())) {
       const style = input.getAttribute('style');
       input.classList.add('completed');
       input.setAttribute('disabled','true');

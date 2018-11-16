@@ -34,7 +34,7 @@ def print(apodUrl, links, questions)
   output << "<div class=\"questions\">"
   questions.each { |q|
     query = q[0]
-    answer = q[1]
+    answer = q[1].downcase().tr("abcdefghijklmnopqrstuvwxyz0123456789", "nopqrstuvwxyz0123456789abcdefghijklm") #encode
     output << "<div class=\"question\">"
     parts = query.split("_____")
     output << "<span class=\"part\">#{parts[0]}</span><input class=\"blank\" /><span class=\"part\">#{parts[1]}</span>"
