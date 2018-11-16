@@ -28,29 +28,30 @@ def isValidSentence(s)
       s.include?("   "))
     return false
   end
-  badstarts = ["it", "he", "she", "they", "this", "that", "there", "these", "those", "you"]
-  badstarts.each { |b|
-    if s.start_with?(b)
-      return false
-    end
-  }
   return true
 end
 
-def isValidQuestion(q)
-  if not q or q.split(" ").length <= 5
+def isValidQuestion(q, a)
+  if not q or not a or q.split(" ").length <= 5
     return false
   end
+  a = a.downcase().strip()
   badTerms = ["Byrd","StellaNavigator","for Windows","your comment data"]
   badTerms.each { |b| 
     if q.include?(b)
       return false
     end
   }
+  badAnswers = ["it", "he", "she", "they", "this", "that", "there", "these", "those", "you"]
+  badAnswers.each { |b|
+    if a.start_with?(b) or a.end_with?(b)
+      return false
+    end
+  }
   return true
 end
 
-def createQuestions(text)
+def createQuestions(text, url)
   decimalRegex = /\b-?[0-9,]+\.?[0-9]*(st|nd|rd|th)?\b/
   questions = []
   # scan for any punctuation, followed by space, followed by a capital letter, 
@@ -109,7 +110,7 @@ def createQuestions(text)
         question = "#{head}#{part1}_____#{part2}"
         answer = decimal
       end
-      if (isValidQuestion(question))
+      if (isValidQuestion(question, answer))
         questions.push([question, answer])
       end
       question = nil
@@ -117,6 +118,15 @@ def createQuestions(text)
     end
     text = text[sIndex+sentence.length-2...text.length]
   end
-  questions.sort { |a, b| b[0].length <=> a[0].length }
+  commonsites = [
+    "https://spaceplace.nasa.gov/oreo-moon/en/"
+  ]
+  if commonsites.include?(url)
+    # if this is a commonly seen site, shuffle the questions so we don't keep seeing the same ones
+    # (this may lead to lower quality questions, but repeats are even worse)
+    questions.shuffle()
+  else
+    questions.sort { |a, b| b[0].length <=> a[0].length }
+  end
   return questions
 end

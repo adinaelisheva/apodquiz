@@ -27,12 +27,12 @@ puts "found #{links.length} links"
 
 questionsBySite = []
 
-def grabQuestions(text)
+def grabQuestions(text, url)
   text = removeExtraneousStuff(text)
   text.gsub!(/<[^>]*>/, " ").gsub!(/\n/," ")
 
   puts "creating questions..."
-  questions = createQuestions(text)
+  questions = createQuestions(text, url)
   puts "created #{questions.length} questions"
   return questions
 end
@@ -40,7 +40,7 @@ end
 # First grab one question from the APOD itself, if any
 puts "parsing apod"
 explanation.gsub!(/\n/," ")
-questions = grabQuestions(explanation)
+questions = grabQuestions(explanation, apodBaseUrl)
 puts "found #{questions.length} questions"
 if (questions.length > 0) 
   puts "adding 1"
@@ -59,7 +59,7 @@ links.each.with_index {|url, ind|
     text = /<body(.|\n)*<\/body[^>]*>/i.match(content)[0]
   end
 
-  questions = grabQuestions(text)
+  questions = grabQuestions(text, url)
   if (questions.length > 0) 
     questionsBySite.push(questions)
   end
