@@ -12,7 +12,7 @@ explanation = apodRegex.match(content)[0]
 
 # Grab a list of followup links from the explanation
 links = []
-explanation.gsub!(/\n/,"").scan(/<a href="([^"]+)">/) {|link|
+explanation.gsub(/\n/,"").scan(/<a href="([^"]+)">/) {|link|
   link = link[0]
   if (not link.start_with?("http")) 
     link = "#{apodBaseUrl}#{link}"
@@ -27,9 +27,23 @@ puts "found #{links.length} links"
 
 all = []
 
+def grabQuestions(text)
+  text = removeExtraneousStuff(text)
+  text.gsub!(/<[^>]*>/, " ").gsub!(/\n/," ")
+
+  puts "creating questions..."
+  questions = createQuestions(text)
+  puts "created #{questions.length} questions"
+  return questions
+end
+
 # First grab one question from the APOD itself, if any
-questions = createQuestions(explanation)
+puts "parsing apod"
+explanation.gsub!(/\n/," ")
+questions = grabQuestions(explanation)
+puts "found #{questions.length} questions"
 if (questions.length > 0) 
+  puts "adding 1"
   all.push(questions[0])
 end
 
@@ -44,13 +58,8 @@ links.each.with_index {|url, ind|
   else
     text = /<body(.|\n)*<\/body[^>]*>/i.match(content)[0]
   end
-  text = removeExtraneousStuff(text)
-  text.gsub!(/<[^>]*>/, " ").gsub!(/\n/," ")
 
-  puts "creating questions"
-  questions = createQuestions(text)
-  puts "added #{questions.length} questions"
-  all = all.concat(questions) 
+  all = all.concat(grabQuestions(text)) 
 }
 
 print(apodUrl, links, all)
