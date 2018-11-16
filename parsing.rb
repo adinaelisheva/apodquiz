@@ -28,7 +28,7 @@ def isValidSentence(s)
       s.include?("   "))
     return false
   end
-  badstarts = ["it", "he", "she", "they", "this", "that", "there", "these", "those"]
+  badstarts = ["it", "he", "she", "they", "this", "that", "there", "these", "those", "you"]
   badstarts.each { |b|
     if s.start_with?(b)
       return false
@@ -41,7 +41,7 @@ def isValidQuestion(q)
   if not q or q.split(" ").length <= 5
     return false
   end
-  badTerms = ["StellaNavigator","for Windows","your comment data"]
+  badTerms = ["Byrd","StellaNavigator","for Windows","your comment data"]
   badTerms.each { |b| 
     if q.include?(b)
       return false
