@@ -2,6 +2,10 @@
   display: none;
 }
 
+.invisible {
+  opacity: 0;
+}
+
 .main {
   display: flex;
   flex-direction: row;
@@ -28,6 +32,27 @@ h1 {
   font-family: 'Bubblegum Sans', sans-serif;
   text-align: center;
   color: #252565;
+}
+
+.score, .finished {
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+.score,
+h1 {
+  margin-bottom: 5px;
+}
+
+.finished {
+  margin-bottom: 20px;
+}
+
+.completed,
+.finished {
+  color:#87d414;
+  font-weight:bold;
 }
 
 .question {

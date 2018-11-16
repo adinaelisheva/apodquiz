@@ -28,6 +28,8 @@ def print(apodUrl, links, questions)
 
   output << "<div class=\"quiz hidden\">"
   output << "<h1>Quiz Time!</h1>"
+  output << "<div class=\"score\"><span class=\"num\">0</span> of <span class=\"whole\"></span></div>"
+  output << "<div class=\"finished invisible\">100%!</div>"
 
   questions.each { |q|
     query = q[0]

@@ -1,11 +1,20 @@
 (() => { 
+  let score;
+  let completed = 0;
+  let numQs;
+
   const verifyAnswer = (e) => {
     const input = e.target;
     const answer = input.parentElement.querySelector('.answer');
     if (input.value.toLowerCase() === answer.innerText.toLowerCase()) {
       const style = input.getAttribute('style');
-      input.setAttribute('style',style + 'color:#87d414;font-weight:bold');
+      input.classList.add('completed');
       input.setAttribute('disabled','true');
+      completed++;
+      score.querySelector('span.num').innerHTML = completed;
+    }
+    if (completed >= numQs) {
+      document.querySelector('.finished').classList.remove('invisible');
     }
   };
 
@@ -16,7 +25,9 @@
   };
 
   window.onload = () => {
-    document.querySelectorAll('input.blank').forEach((input) => {
+    const questions = document.querySelectorAll('input.blank');
+    numQs = questions.length;
+    questions.forEach((input) => {
       const answerDiv = input.parentElement.querySelector('.answer');
       const answer = answerDiv.innerText.toLowerCase().trim();
       answerDiv.innerHTML = answer;
@@ -27,6 +38,8 @@
     document.querySelector('.openlinks').onclick = () => {
       openAllLinks();
     };
+    score = document.querySelector('.score');
+    score.querySelector('.whole').innerText = questions.length;
     document.querySelector('.quiz').classList.remove('hidden');
   };
 

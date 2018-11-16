@@ -47,7 +47,7 @@ def createQuestions(text)
         not s.start_with?("These") and 
         not s.start_with?("Those"))
       s.gsub!(/ +/, " ")
-      # TODO: add a thing where if a sentence starts with a conjunction (When, And, But, Because, Since, etc) just
+      # TODO: add a thing where if a sentence starts with a conjunction (When, And, But, Because, Since, If, etc) just
       # skip them in your counting. Eg "Because hydrogen is awesome" --> "Because ___ is awesome"
       copulaInd = s.index(/\bis\b/)
       copulaLen = 2
@@ -107,7 +107,6 @@ def createQuestions(text)
   end
   #TODO: sort on a score (decimals are good, the longer the better. Words can be good... somehow?)
   questions.sort { |a, b| a[0].length <=> b[0].length }
-  puts questions
   if (questions.length < 4) 
     return questions
   end
