@@ -89,4 +89,4 @@ if finalList.length < 10
   end
 end
 
-print(apodUrl, links, finalList)
+print(apodUrl, links, finalList.shuffle())
