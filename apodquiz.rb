@@ -73,11 +73,17 @@ links.each.with_index {|url, ind|
 # all cases this tries to draw the questions as evenly from all sites as possible, and they will be
 # mixed up together.
 finalList = []
-questionsBySite.each { |list|
-  finalList.push(list.pop())
-}
-
 usedAnswers = []
+questionsBySite.each { |list|
+  q = list.pop()
+  while q and usedAnswers.include?(q[1])
+    q = list.pop()
+  end
+  if q
+    finalList.push(q)
+    usedAnswers.push(q[1])
+  end
+}
 
 if finalList.length < 10
   numLeft = questionsBySite.inject(0) {|sum, l| sum + l.length }
@@ -85,10 +91,9 @@ if finalList.length < 10
   ind = 0
   while numLeft > 0 and finalList.length < 10
     q = questionsBySite[ind].pop()
-    a = q ? q[1] : nil
-    if q and not usedAnswers.include?(a)
+    if q and not usedAnswers.include?(q[1])
       finalList.push(q)
-      usedAnswers.push(a)
+      usedAnswers.push(q[1])
       numLeft = numLeft-1
     end
     ind = (ind + 1) % questionsBySite.length
