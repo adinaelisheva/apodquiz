@@ -11,6 +11,7 @@ def print(apodUrl, links, questions)
   
   output << "<title>APOD Quiz</title>"
   output << "<script src=\"index.js\"></script>"
+  output << "<link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"favicon.ico\" />"
   output << "<link href=\"https://fonts.googleapis.com/css?family=Bubblegum+Sans\" rel=\"stylesheet\">"
   output << "<link href=\"index.css\" type=\"text/css\" rel=\"stylesheet\">"  
   
