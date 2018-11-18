@@ -77,14 +77,18 @@ questionsBySite.each { |list|
   finalList.push(list.pop())
 }
 
+usedAnswers = []
+
 if finalList.length < 10
   numLeft = questionsBySite.inject(0) {|sum, l| sum + l.length }
   #don't have quite 10 questions, keep adding some
   ind = 0
   while numLeft > 0 and finalList.length < 10
     q = questionsBySite[ind].pop()
-    if q 
+    a = q ? q[1] : nil
+    if q and not usedAnswers.include?(a)
       finalList.push(q)
+      usedAnswers.push(a)
       numLeft = numLeft-1
     end
     ind = (ind + 1) % questionsBySite.length
