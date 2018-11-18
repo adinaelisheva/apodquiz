@@ -111,7 +111,7 @@ def createQuestions(text, url)
         answer = decimal
       end
       if (isValidQuestion(question, answer))
-        questions.push([question, answer + "."])
+        questions.push([question + ".", answer])
       end
       question = nil
       answer = nil
