@@ -1,4 +1,4 @@
-apodRegex = /Explanation:(.|\n)*Tomorrow's picture:/
+apodRegex = /Explanation:(.|\n)*<center>/
 apodBaseUrl = "https://apod.nasa.gov/apod/"
 
 require_relative 'parsing'
@@ -7,7 +7,9 @@ require_relative 'printing'
 # Grab the explanation block off the apod site
 tail = ARGV[0] ? "ap#{ARGV[0]}.html" : "astropix.html"
 apodUrl = "#{apodBaseUrl}#{tail}"
-content = `wget -q -O - #{apodUrl}`
+content = `wget -q -O - #{apodUrl}`.force_encoding(Encoding::UTF_8)
+title =	/<b>([^<]*)<\/b>(<br>|<b>|\\n|\s)*Image Credit/.match(content)[1]
+puts "Found APOD '#{title.strip()}'"
 explanation = apodRegex.match(content)[0]
 
 # Grab a list of followup links from the explanation
