@@ -7,7 +7,7 @@ require_relative 'printing'
 # Grab the explanation block off the apod site
 tail = ARGV[0] ? "ap#{ARGV[0]}.html" : "astropix.html"
 apodUrl = "#{apodBaseUrl}#{tail}"
-content = `wget -q -O - #{apodUrl}`.force_encoding(Encoding::UTF_8)
+content = `wget -q -O - #{apodUrl}`.force_encoding('iso-8859-1')
 title =	/<b>([^<]*)<\/b>(<br>|<b>|\\n|\s)*Image Credit/.match(content)[1]
 puts "Found APOD '#{title.strip()}'"
 explanation = apodRegex.match(content)[0]
@@ -30,6 +30,14 @@ puts "found #{links.length} links"
 questionsBySite = []
 
 def grabQuestions(text, url)
+  # The wikipedia references section is full of bad content. Kill it.
+  if url.start_with?("https://en.wikipedia.org/wiki/")
+    i = text.index("id=\"References\"")
+    if i
+      text = text[0...i]
+    end
+  end
+
   text = removeExtraneousStuff(text)
   text.gsub!(/<[^>]*>/, " ").gsub!(/\n/," ")
 
@@ -52,14 +60,18 @@ end
 # For each explanation, grab some text if there is any
 links.each.with_index {|url, ind|
   puts "fetching link #{ind+1} of #{links.length}: #{url}"
-  content = `wget -q -O - #{url}`.force_encoding(Encoding::UTF_8)
+  content = `wget -q -O - "#{url}"`.force_encoding('iso-8859-1')
 
   puts "parsing link"
   if (url.start_with?(apodBaseUrl)) 
-    text = apodRegex.match(content)[0]
+    matchedText = apodRegex.match(content)
   else
-    text = /<body(.|\n)*<\/body[^>]*>/i.match(content)[0]
+    matchedText = /<body(.|\n)*<\/body[^>]*>/i.match(content)
   end
+  if not matchedText
+    next
+  end
+  text = matchedText[0]
 
   questions = grabQuestions(text, url)
   if (questions.length > 0) 

@@ -28,6 +28,10 @@ def isValidSentence(s)
       s.include?("   "))
     return false
   end
+  # this is to prevent citations, eg: Bob Smith (1999 ed.).
+  if (s.split(" ").length < 11 and /^[^()]+\([^()]+\)$/.match(s))
+      return false
+  end
   return true
 end
 
@@ -36,7 +40,15 @@ def isValidQuestion(q, a)
     return false
   end
   a = a.downcase().strip()
-  badTerms = ["Byrd","StellaNavigator","for Windows","your comment data"]
+  badTerms = [
+    "Byrd",
+    "StellaNavigator",
+    "for Windows",
+    "your comment data",
+    "Archived from the original",
+    "Annual Progress Report",
+    "Accessed on line"
+  ]
   badTerms.each { |b| 
     if q.include?(b)
       return false
