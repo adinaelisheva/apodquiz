@@ -5,10 +5,17 @@ require_relative 'parsing'
 require_relative 'printing'
 
 # Grab the explanation block off the apod site
-tail = ARGV[0] ? "ap#{ARGV[0]}.html" : "astropix.html"
+date = ""
+if ARGV[0]
+  date = ARGV[0]
+else
+  t = Time.now
+  date = t.strftime("%y%m%d")
+end
+tail = "ap#{date}.html"
 apodUrl = "#{apodBaseUrl}#{tail}"
 content = `wget -q -O - #{apodUrl}`.force_encoding('iso-8859-1')
-title =	/<b>([^<]*)<\/b>(<br>|<b>|\\n|\s)*Image Credit/.match(content)[1]
+title =	/<b>([^<]*)<\/b>(<br>|<b>|\\n|\s)*(Image|Video) Credit/.match(content)[1]
 puts "Found APOD '#{title.strip()}'"
 explanation = apodRegex.match(content)[0]
 
@@ -19,7 +26,7 @@ explanation.gsub(/\n/,"").scan(/<a href="([^"]+)">/) {|link|
   if (not link.start_with?("http")) 
     link = "#{apodBaseUrl}#{link}"
   end
-  if (link.start_with?("#{apodBaseUrl}image/") or link.end_with?(".jpg") or link.end_with?(".png") or link.end_with?(".gif"))
+  if link.start_with?("#{apodBaseUrl}image/") or link.end_with?(".jpg") or link.end_with?(".png") or link.end_with?(".gif")
     next
   end
   links.push(link)
@@ -39,7 +46,10 @@ def grabQuestions(text, url)
   end
 
   text = removeExtraneousStuff(text)
-  text.gsub!(/<[^>]*>/, " ").gsub!(/\n/," ")
+  text.gsub!(/ <[^>]*> */, " ")
+  text.gsub!(/ *<[^>]*> /, " ")
+  text.gsub!(/<[^>]>/, "")
+  text.gsub!(/\n/," ")
 
   puts "creating questions..."
   questions = createQuestions(text, url)
@@ -69,6 +79,7 @@ links.each.with_index {|url, ind|
     matchedText = /<body(.|\n)*<\/body[^>]*>/i.match(content)
   end
   if not matchedText
+    puts "no body found"
     next
   end
   text = matchedText[0]
@@ -106,10 +117,10 @@ if finalList.length < 10
     if q and not usedAnswers.include?(q[1])
       finalList.push(q)
       usedAnswers.push(q[1])
-      numLeft = numLeft-1
     end
+    numLeft = numLeft-1
     ind = (ind + 1) % questionsBySite.length
   end
 end
 
-print(apodUrl, links, finalList.shuffle())
+print(apodUrl, links, title, date, finalList.shuffle())

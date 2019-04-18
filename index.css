@@ -34,14 +34,20 @@ h1 {
   color: #252565;
 }
 
-.score, .finished {
+.score, .finished, h2 {
   text-align: center;
   font-family: sans-serif;
+}
+
+.score, .finished {
   font-size: 12px;
 }
 
-.score,
-h1 {
+h2 {
+  font-size: 14px;
+}
+
+.score, h1 {
   margin-bottom: 5px;
 }
 

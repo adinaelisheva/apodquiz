@@ -1,4 +1,4 @@
-def print(apodUrl, links, questions)
+def print(apodUrl, links, title, date, questions)
   filename = ARGV[1] ? ARGV[1] : "index.html"
   puts "Deleting old #{filename} (if any)"
   `rm #{filename}`
@@ -7,6 +7,8 @@ def print(apodUrl, links, questions)
 
   output = File.open(filename, "w")
   
+  printdate = "#{date[2..3]}/#{date[4..5]}/#{date[0..1]}"
+
   output << "<html><head>"
   
   output << "<title>APOD Quiz</title>"
@@ -29,6 +31,7 @@ def print(apodUrl, links, questions)
 
   output << "<div class=\"quiz hidden\">"
   output << "<h1>Quiz Time!</h1>"
+  output << "<h2>#{printdate} - #{title}</h2>"
   output << "<div class=\"score\"><span class=\"num\">0</span> of <span class=\"whole\"></span></div>"
   output << "<div class=\"finished invisible\">100%!</div>"
 
