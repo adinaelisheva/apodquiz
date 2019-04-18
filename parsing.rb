@@ -53,7 +53,8 @@ def isValidQuestion(q, a)
     "your comment data",
     "Archived from the original",
     "Annual Progress Report",
-    "Accessed on line"
+    "Accessed on line",
+    "permanently deleted"
   ]
   badTerms.each { |b| 
     if q.include?(b)
