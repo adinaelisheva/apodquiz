@@ -1,4 +1,4 @@
-def print(apodUrl, links, title, date, questions)
+def print(apodUrl, imageTag, explanation, links, title, date, questions)
   filename = ARGV[1] ? ARGV[1] : "index.html"
   puts "Deleting old #{filename} (if any)"
   `rm #{filename}`
@@ -22,16 +22,25 @@ def print(apodUrl, links, title, date, questions)
   links.each { |l|
     output << "<a class=\"link hidden\" href=\"#{l}\">#{l}</a>"
   }
-  output << "<div class=\"main\">"
 
-  output << "<div class=\"iframe\">"
-  output << "<iframe width=\"800\" height=\"600\" src=\"#{apodUrl}\"></iframe>"
+  output << "<div class=\"header\">"
+  output << "<h1>Quiz Time!</h1>"
+  output << "<h2>#{printdate} - #{title}</h2>"
+  output << "</div>"
+
+  output << "<div class=\"main\">"
+  output << "<div class=\"apod\">"
+  output << "<div class=\"imageOrVideo\">"
+  output << imageTag
+  output << "</div>"
+  output << "<div class=\"explanation\">"
+  output << "<p>#{explanation}</p>"
   output << "<div class=\"openlinks\">Open all links in tabs</div>"
+  output << "</div>"
+  output << "</div>"
   output << "</div>"
 
   output << "<div class=\"quiz hidden\">"
-  output << "<h1>Quiz Time!</h1>"
-  output << "<h2>#{printdate} - #{title}</h2>"
   output << "<div class=\"score\"><span class=\"num\">0</span> of <span class=\"whole\"></span></div>"
   output << "<div class=\"finished invisible\">100%!</div>"
 

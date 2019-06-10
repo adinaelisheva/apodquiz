@@ -22,6 +22,24 @@ def removeExtraneousStuff(text)
   return retText
 end
 
+def getImageOrVideoTag(imageParagraph)
+  # first look for an image
+  imageMatch = imageParagraph.match(/<br>\s*<a href="([^"]+)"/)
+  if imageMatch
+    image = imageMatch[1]
+    if not image.start_with?("http") 
+      image = "http://apod.nasa.gov/#{image}"
+    end
+    return "<img src=\"#{image}\">"
+  end
+  # otherwise it's probably a video or something, return the iframe
+  iframeMatch = imageParagraph.match(/<iframe.+<\/iframe>/)
+  if iframeMatch
+    return iframeMatch[0]
+  end
+  return
+end
+
 def isValidSentence(s)
   s = s.downcase()
   if s.length < 20 or 

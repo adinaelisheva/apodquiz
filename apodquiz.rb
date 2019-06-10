@@ -1,4 +1,6 @@
 apodRegex = /Explanation:(.|\n)*<center>/
+apodImageParagraphOpeningString = "Discover the cosmos!</a>Each day a different image or photograph of our fascinating universe isfeatured, along with a brief explanation written by a professional astronomer."
+apodImageParagraphRegex = /#{apodImageParagraphOpeningString} *<p>[\d\w ]*<br>(.|\n)*Credit/
 apodBaseUrl = "https://apod.nasa.gov/apod/"
 
 require_relative 'parsing'
@@ -17,7 +19,9 @@ apodUrl = "#{apodBaseUrl}#{tail}"
 content = `wget -q -O - #{apodUrl}`.force_encoding('iso-8859-1')
 title =	/<b>([^<]*)<\/b>(<br>|<b>|\\n|\s)*(Image|Video) Credit/.match(content)[1]
 puts "Found APOD '#{title.strip()}'"
-explanation = apodRegex.match(content)[0]
+imageTag = getImageOrVideoTag(apodImageParagraphRegex.match(content.gsub(/\n/,""))[0])
+puts "Found image block '#{imageTag}'"
+explanation = apodRegex.match(content)[0].gsub("Explanation:","")
 
 # Grab a list of followup links from the explanation
 links = []
@@ -123,4 +127,4 @@ if finalList.length < 10
   end
 end
 
-print(apodUrl, links, title, date, finalList.shuffle())
+print(apodUrl, imageTag, explanation, links, title, date, finalList.shuffle())
