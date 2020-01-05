@@ -13,6 +13,7 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
   
   output << "<title>APOD Quiz</title>"
   output << "<script src=\"index.js\"></script>"
+  output << "<meta name=\"viewport\" content=\"width=device-width\">"
   output << "<link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"favicon.ico\" />"
   output << "<link href=\"https://fonts.googleapis.com/css?family=Bubblegum+Sans\" rel=\"stylesheet\">"
   output << "<link href=\"index.css\" type=\"text/css\" rel=\"stylesheet\">"  
@@ -45,6 +46,7 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
   output << "<div class=\"finished invisible\">100%!</div>"
 
   output << "<div class=\"questions\">"
+  output << "<button class=\"mobile\">&lt;</button>"
   questions.each { |q|
     query = q[0]
     answer = q[1].downcase().tr("abcdefghijklmnopqrstuvwxyz0123456789", "nopqrstuvwxyz0123456789abcdefghijklm") #encode
@@ -54,8 +56,11 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
     output << "<div class=\"answer hidden\">#{answer}</div>"
     output << "</div>"
   }
+  output << "<button class=\"mobile\">&gt;</button>"
 
   output << "</div></div></div>"
+
+  output << "<div class=\"mobile hide\">Hide Text</div>"
 
   output << "</body></html>"
 
