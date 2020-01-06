@@ -4,6 +4,7 @@
 
 .invisible {
   opacity: 0;
+  pointer-events: none;
 }
 
 .main {
@@ -88,6 +89,9 @@ h1 {
   .mobile {
     display: block;
   }
+  body {
+    font-size: 14px;
+  }
   .imageOrVideo {
     position: fixed;
     top: 0;
@@ -119,6 +123,9 @@ h1 {
     background: rgba(100,100,100,0.6);
     border-radius: 30px;
   }
+  .header, .explanation, .quiz {
+    transition: opacity 1s;
+  }
   .explanation {
     padding-top: 5px;
   }
@@ -138,6 +145,7 @@ h1 {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
   }
   .questions button {
     color: white;
@@ -159,9 +167,6 @@ h1 {
     background: white;
     color: rgb(100,100,100);
   }
-  .question:not(:nth-child(2)) {
-    display: none;
-  }
   .question {
     margin: 5px 10px;
   }
@@ -170,12 +175,18 @@ h1 {
     border: none;
     border-bottom: 2px solid white;
     color: white;
+    max-width: 248px;
+  }
+  .hideContainer {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    right: 0;
   }
   .hide {
     width: 100px;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 10px;
     border: solid 1px white;
     text-align: center;
     padding: 2px;

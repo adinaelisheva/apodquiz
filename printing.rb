@@ -60,7 +60,7 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
 
   output << "</div></div></div>"
 
-  output << "<div class=\"mobile hide\">Hide Text</div>"
+  output << "<div class=\"hideContainer\"><div class=\"mobile hide\">Hide Text</div></div>"
 
   output << "</body></html>"
 

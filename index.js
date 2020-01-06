@@ -3,24 +3,24 @@
   let completed = 0;
   let numQs;
 
-  const decode = (str) => {
+  function decode(str) {
     const input = 'nopqrstuvwxyz0123456789abcdefghijklm';
     const output = 'abcdefghijklmnopqrstuvwxyz0123456789';
     var translate = x => input.indexOf(x) > -1 ? output[input.indexOf(x)] : x;
     return str.split('').map(translate).join('');
-  };
+  }
   
-  const getMiniDateStr = (date) => {
+  function getMiniDateStr(date) {
     let m = date.getMonth() + 1;
     m = m.length < 2 ? `0${m}` : m;
     let d = date.getDate();
     d = d.length < 2 ? `0${d}` : d; 
     return `${m}-${d}-${date.getFullYear()}`;
-  };
+  }
 
   const cookiename = 'lastcompleted';
 
-  const completeQuiz = () => {
+  function completeQuiz() {
     document.querySelector('.finished').classList.remove('invisible');
     const date = new Date();
 
@@ -31,9 +31,9 @@
     const expires = date.toUTCString();
     
     document.cookie = `${cookiename}=${completed};expires=${expires};path=/`;
-  };
+  }
 
-  const hasQuizAlreadyBeenCompleted = () => {
+  function hasQuizAlreadyBeenCompleted() {
     const cookies = document.cookie.split('; ');
     for (let i = 0; i < cookies.length; i++) {
       const parts = cookies[i].split('=');
@@ -48,7 +48,7 @@
     return false;
   }
 
-  completeQuestion = (input) => {
+  function completeQuestion(input) {
     input.classList.add('completed');
     input.setAttribute('disabled','true');
     completed++;
@@ -58,19 +58,65 @@
     }
   }
 
-  const verifyAnswer = (e) => {
+  function verifyAnswer(e) {
     const input = e.target;
     const answer = input.parentElement.querySelector('.answer');
     if (input.value.toLowerCase() === decode(answer.innerText.toLowerCase())) {
       completeQuestion(input);
     }
-  };
+  }
 
-  const openAllLinks = () => {
+  function openAllLinks() {
     document.querySelectorAll('a.link.hidden').forEach((link) => {
       window.open(link.getAttribute('href'));
     })
-  };
+  }
+
+  function switchMobileQuestion(el) {
+    const direction = el.innerText === '<' ? -1 : 1;
+    const questions = document.querySelectorAll('.question');
+    let i = 0;
+    for (; i < questions.length; i++) {
+      if (!questions[i].classList.contains('hidden')) {
+        break;
+      }
+    }
+    questions[i].classList.add('hidden');
+    i = (i + direction) % questions.length;
+    if (i < 0) { i += questions.length; }
+    questions[i].classList.remove('hidden');
+  }
+
+  function hideText() {
+    [
+      document.querySelector('.header'),
+      document.querySelector('.explanation'),
+      document.querySelector('.quiz'),
+    ].forEach((el) => {
+      el.classList.add('invisible');
+    });
+  }
+
+  function showText() {
+    [
+      document.querySelector('.header'),
+      document.querySelector('.explanation'),
+      document.querySelector('.quiz'),
+    ].forEach((el) => {
+      el.classList.remove('invisible');
+    });
+  }
+
+  function toggleTextVisibility(el) {
+    const command = el.innerText.split(' ')[0];
+    if (command === 'Hide') {
+      el.innerText = 'Show Text';
+      hideText();
+    } else {
+      el.innerText = 'Hide Text';
+      showText();
+    }
+  }
 
   window.onload = () => {
     const quizAlreadyCompleted = hasQuizAlreadyBeenCompleted();
@@ -101,6 +147,48 @@
     document.querySelector('.openlinks').onclick = () => {
       openAllLinks();
     };
+
+    // set up mobile behavior if mobile is visible
+    if (document.querySelector('.mobile').computedStyleMap().get('display').value === 'block') {
+      document.querySelectorAll('button.mobile').forEach((el) => {
+        el.onclick = () => {
+          switchMobileQuestion(el);
+        }
+      });
+
+      let first = true;
+      document.querySelectorAll('.question').forEach((el) => {
+        if (first) {
+          first = false;
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+
+      document.querySelector('.hide').onclick = (event) => {
+        toggleTextVisibility(event.target);
+      };
+
+      // set up text fade-in
+      [
+        document.querySelector('.header'),
+        document.querySelector('.explanation'),
+        document.querySelector('.quiz'),
+      ].forEach((el) => {
+        el.classList.add('hidden');
+      });
+      hideText();
+      window.setTimeout(() => {
+        [
+          document.querySelector('.header'),
+          document.querySelector('.explanation'),
+          document.querySelector('.quiz'),
+        ].forEach((el) => {
+          el.classList.remove('hidden');
+        });
+      }, 1500);
+      window.setTimeout(showText, 2000);
+    }
 
     document.querySelector('.quiz').classList.remove('hidden');
   };
