@@ -179,7 +179,11 @@
           el.classList.remove('hidden');
         });
       }, 1500);
-      window.setTimeout(showText, 2000);
+      window.setTimeout(() => {
+        showText();
+        // Show the button to control the text as well (but this will never hide again)
+        document.querySelector('.hideContainer').classList.remove('invisible');
+      }, 2000);
     } else {
       // If this is desktop, show the hidden text for good
       showText();

@@ -123,7 +123,7 @@ h1 {
     background: rgba(100,100,100,0.6);
     border-radius: 30px;
   }
-  .header, .explanation, .quiz {
+  .header, .explanation, .quiz, .hideContainer {
     transition: opacity 1s;
   }
   .explanation {
