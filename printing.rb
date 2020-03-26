@@ -24,7 +24,7 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
     output << "<a class=\"link hidden\" href=\"#{l}\">#{l}</a>"
   }
 
-  output << "<div class=\"header\">"
+  output << "<div class=\"header invisible\">"
   output << "<h1>Quiz Time!</h1>"
   output << "<h2>#{printdate} - #{title}</h2>"
   output << "</div>"
@@ -34,14 +34,14 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
   output << "<div class=\"imageOrVideo\">"
   output << imageTag
   output << "</div>"
-  output << "<div class=\"explanation\">"
+  output << "<div class=\"explanation invisible\">"
   output << "<p>#{explanation}</p>"
   output << "<div class=\"openlinks\">Open all links in tabs</div>"
   output << "</div>"
   output << "</div>"
   output << "</div>"
 
-  output << "<div class=\"quiz hidden\">"
+  output << "<div class=\"quiz invisible\">"
   output << "<div class=\"score\"><span class=\"num\">0</span> of <span class=\"whole\"></span></div>"
   output << "<div class=\"finished invisible\">100%!</div>"
 

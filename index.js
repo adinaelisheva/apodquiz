@@ -170,14 +170,6 @@
       };
 
       // set up text fade-in
-      [
-        document.querySelector('.header'),
-        document.querySelector('.explanation'),
-        document.querySelector('.quiz'),
-      ].forEach((el) => {
-        el.classList.add('hidden');
-      });
-      hideText();
       window.setTimeout(() => {
         [
           document.querySelector('.header'),
@@ -188,9 +180,10 @@
         });
       }, 1500);
       window.setTimeout(showText, 2000);
+    } else {
+      // If this is desktop, show the hidden text for good
+      showText();
     }
-
-    document.querySelector('.quiz').classList.remove('hidden');
   };
 
 })();
