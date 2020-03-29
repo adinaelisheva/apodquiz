@@ -40,27 +40,6 @@ puts "found #{links.length} links"
 
 questionsBySite = []
 
-def grabQuestions(text, url)
-  # The wikipedia references section is full of bad content. Kill it.
-  if url.start_with?("https://en.wikipedia.org/wiki/")
-    i = text.index("id=\"References\"")
-    if i
-      text = text[0...i]
-    end
-  end
-
-  text = removeExtraneousStuff(text)
-  text.gsub!(/ <[^>]*> */, " ")
-  text.gsub!(/ *<[^>]*> /, " ")
-  text.gsub!(/<[^>]>/, "")
-  text.gsub!(/\n/," ")
-
-  puts "creating questions..."
-  questions = createQuestions(text, url)
-  puts "created #{questions.length} questions"
-  return questions
-end
-
 # First grab one question from the APOD itself, if any
 puts "parsing apod"
 explanation.gsub!(/\n/," ")

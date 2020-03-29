@@ -40,26 +40,40 @@ def getImageOrVideoTag(imageParagraph)
   return
 end
 
-def isValidSentence(s)
+def isValidSentence(s, verbose=false)
   s = s.downcase()
   if s.length < 20 or 
       s.length > 300
       s.include?("   ")
+    if verbose
+      puts "Not valid - Either length (#{s.length}) is bad or has too much whitespace"
+    end
     return false
   end
   # this is to prevent citations, eg: Bob Smith (1999 ed.).
   if (s.split(" ").length < 11 and /^[^()]+\([^()]+\)$/.match(s))
+    if verbose
+      puts "Not valid - too much like a citation"
+    end
     return false
   end
   # This is to prevent mag. X from indicating a sentence
   if s.end_with?("mag")
+    if verbose
+      puts "Not a real sentence - Mag. is an abbreviation :)"
+    end
     return false
   end
   return true
 end
 
-def isValidQuestion(q, a)
+def isValidQuestion(q, a, verbose=false)
   if not q or not a or q.split(" ").length <= 7
+    if verbose and (not q or not a)
+      puts "No copula, decimal, or ordinal found"
+    elsif verbose
+      puts "Not a valid question - too short"
+    end
     return false
   end
   a = a.downcase().strip()
@@ -76,19 +90,25 @@ def isValidQuestion(q, a)
   ]
   badTerms.each { |b| 
     if q.include?(b)
+      if verbose
+        puts "Not a valid question - includes bad term #{b}"
+      end
       return false
     end
   }
   badAnswers = ["it", "he", "she", "they", "this", "that", "there", "these", "those", "you"]
   badAnswers.each { |b|
     if a.start_with?(b) or a.end_with?(b)
+      if verbose
+        puts "Not a valid question - starts or ends with unclear pronoun #{b}"
+      end
       return false
     end
   }
   return true
 end
 
-def createQuestions(text, url)
+def createQuestions(text, url, verbose=false)
   decimalRegex = /\b(-?[0-9,]+\.?[0-9]*(st|nd|rd|th)?)(%|lb|ms|s|kg|°|°C|°F|C|F|deg|ml)?\b/
   questions = []
   # scan for any punctuation, followed by space, followed by a capital letter, 
@@ -108,6 +128,9 @@ def createQuestions(text, url)
     if not s
       next
     end
+    if verbose
+      puts "\nLooking at sentence \"#{s}\""
+    end
     head = ""
     conjunctions = ["when", "and", "but", "because", "since", "if", "with", "although", "however,","furthermore,","as"]
     conjunctions.each { |c|
@@ -117,9 +140,9 @@ def createQuestions(text, url)
         s = s[len...s.length]
       end
     }
-    if (isValidSentence(s))
+    if (isValidSentence(s, verbose))
       s.gsub!(/ +/, " ")
-      copulas = ["is","are","was","were","will be","should","should be"]
+      copulas = ["is","are","was","were","will be","should","should be","have been","has been"]
       copulaInd = nil
       copulaLen = 0
       copulas.each { |c|
@@ -129,6 +152,9 @@ def createQuestions(text, url)
         end
       }
       if (copulaInd)
+        if (verbose)
+          puts "Found a copula! \"#{s[copulaInd ... copulaInd + copulaLen]}\" at #{copulaInd}"
+        end
         part1 = s[0...copulaInd]
         part2 = s[copulaInd + copulaLen...s.length]
         len1 = part1.split(" ").length
@@ -139,12 +165,17 @@ def createQuestions(text, url)
         elsif (len2 < 5 and not part2.include?(","))
           question = "#{head}#{s[0..copulaInd + copulaLen]} _____"
           answer = part2
+        elsif verbose
+          puts "Can't use - both sides are too long or include commas"
         end
       end
 
       decimalInd = s.index(decimalRegex)
       if (not question and decimalInd)
         decimal = s.match(decimalRegex)[1]
+        if (verbose)
+          puts "No copula, but found decimal #{decimal} at #{decimalInd}\""
+        end
         part1 = s[0...decimalInd]
         part2 = s[decimalInd + decimal.length...s.length]
         question = "#{head}#{part1}_____#{part2}"
@@ -161,6 +192,9 @@ def createQuestions(text, url)
         end
       }
       if (not question and ordinalInd)
+        if (verbose)
+          puts "No copulas or decmials, but found ordinal \"#{s[ordinalInd ... ordinalInd + ordinalLen]} at #{ordinalInd}\""
+        end
         part1 = s[0...ordinalInd]
         part2 = s[ordinalInd + ordinalLen...s.length]
         len1 = part1.split(" ").length
@@ -171,10 +205,18 @@ def createQuestions(text, url)
         elsif (len2 < 5 and not part2.include?(","))
           question = "#{head}#{s[0..ordinalInd + ordinalLen]} _____"
           answer = part2
+        elsif verbose
+          puts "Can't use - both sides are too long or include commas"
         end
       end
 
-      if (isValidQuestion(question, answer))
+      if question and verbose
+        puts "Found question: #{question}"
+      end
+      if (isValidQuestion(question, answer, verbose))
+        if verbose
+          puts "Keeping it!"
+        end
         questions.push([question + ".", answer])
       end
       question = nil
@@ -192,5 +234,27 @@ def createQuestions(text, url)
   else
     questions.sort { |a, b| b[0].length <=> a[0].length }
   end
+  return questions
+end
+
+
+def grabQuestions(text, url, verbose=false)
+  # The wikipedia references section is full of bad content. Kill it.
+  if url.start_with?("https://en.wikipedia.org/wiki/")
+    i = text.index("id=\"References\"")
+    if i
+      text = text[0...i]
+    end
+  end
+
+  text = removeExtraneousStuff(text)
+  text.gsub!(/ <[^>]*> */, " ")
+  text.gsub!(/ *<[^>]*> /, " ")
+  text.gsub!(/<[^>]>/, "")
+  text.gsub!(/\n/," ")
+
+  puts "creating questions..."
+  questions = createQuestions(text, url, verbose)
+  puts "created #{questions.length} questions"
   return questions
 end
