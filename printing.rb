@@ -1,5 +1,4 @@
 def print(apodUrl, imageTag, explanation, links, title, date, questions)
-  puts questions
   filename = ARGV[1] ? ARGV[1] : "index.html"
   puts "Deleting old #{filename} (if any)"
   `rm #{filename}`
