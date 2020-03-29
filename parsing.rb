@@ -121,7 +121,7 @@ def isValidQuestion(q, a, verbose=false)
       return false
     end
   }
-  badAnswers = ["it", "he", "she", "they", "this", "that", "there", "these", "those", "you", "farther", "further", "much", "most", "many"]
+  badAnswers = ["it", "he", "she", "they", "this", "that", "there", "these", "those", "you", "farther", "further", "much", "most", "many", "after"]
   badAnswers.each { |b|
     if a.start_with?(b) or a.end_with?(b)
       if verbose
@@ -138,12 +138,15 @@ def createQuestions(text, url, verbose=false)
   questions = []
   # scan for any punctuation, followed by space, followed by a capital letter, 
   # followed by stuff, followed by more punctuation and a space
-  scanRegex = /[.!>,;] +[A-Z][A-z0-9., '-()]*?[.!;] /
+  scanRegex = /[.!>,;:] +[A-Z][A-z0-9., '\-()]*?[.!;:] /
   
   # Regexes don't allow for overlap, so have to scan for each sentence one at 
   # a time, then chop it off the front of the text
   while text.length > 0
     sentence = text[scanRegex, 0]
+    if verbose 
+      puts "\nfound sentence '#{sentence}''"
+    end
     sIndex = text.index(scanRegex)
     # cut off the punctuation on either end.
     if not sentence
@@ -154,7 +157,7 @@ def createQuestions(text, url, verbose=false)
       next
     end
     if verbose
-      puts "\nLooking at sentence \"#{s}\""
+      puts "sentence stripped to '#{s}'"
     end
     head = ""
     conjunctions = ["when", "and", "but", "because", "since", "if", "with", "although", "however,","furthermore,","as"]
@@ -280,6 +283,9 @@ def grabQuestions(text, url, verbose=false)
   text.gsub!(/ +/," ")
 
   puts "creating questions..."
+  if (verbose) 
+    puts "Grabbing questions from the text: #{text}\n\n"
+  end
   questions = createQuestions(text, url, verbose)
   puts "created #{questions.length} questions"
   return questions
