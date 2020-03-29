@@ -156,7 +156,7 @@ def createQuestions(text, url, verbose=false)
     }
     if (isValidSentence(s, verbose))
       s.gsub!(/ +/, " ")
-      copulas = ["is","are","was","were","will be","should","should be","have been","has been","in","of","for","with","to","from","on","since","has","had"]
+      copulas = [" is "," are "," was "," were "," will be "," should "," should be "," have been "," has been "," in "," of "," for "," with "," to "," from "," on "," since "," has "," had "," have "]
       copulaInd = nil
       copulaLen = 0
       copulas.each { |c|
@@ -174,10 +174,10 @@ def createQuestions(text, url, verbose=false)
         len1 = part1.split(" ").length
         len2 = part2.split(" ").length
         if (len1 < 5 and not part1.include?(","))
-          question = "#{head}_____ #{s[copulaInd...s.length]}"
+          question = "#{head}_____#{s[copulaInd...s.length]}"
           answer = part1
         elsif (len2 < 5 and not part2.include?(","))
-          question = "#{head}#{s[0..copulaInd + copulaLen]} _____"
+          question = "#{head}#{s[0..copulaInd + copulaLen]}_____"
           answer = part2
         elsif verbose
           puts "Can't use - both sides are too long or include commas"
