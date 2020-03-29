@@ -125,7 +125,7 @@ h1 {
   div {
     color: white;
   }
-  a, .openlinks {
+  a, .isFakeLink, .hint.isFakeLink {
     color: rgb(203, 252, 255);
   }
   .header, .explanation, .quiz, .hide {
@@ -148,6 +148,9 @@ h1 {
   .finished {
     margin-bottom: 1px;
     color: rgb(118, 255, 6);
+  }
+  .quiz {
+    margin-bottom: 50px;
   }
   .questions {
     padding: 0 10px 10px;

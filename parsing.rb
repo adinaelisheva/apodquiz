@@ -111,7 +111,17 @@ def isValidQuestion(q, a, verbose=false)
       return false
     end
   }
-  badAnswers = ["it", "he", "she", "they", "this", "that", "there", "these", "those", "you"]
+  # Needed to rule out things like "[To its left] are ....", plus other bad things
+  badAnswerTerms = ["left", "right", "top", "bottom", "above", "below", "middle", "center", "published"]
+  badAnswerTerms.each { |b| 
+    if a.include?(b)
+      if verbose
+        puts "Not a valid question - answer includes bad term #{b}"
+      end
+      return false
+    end
+  }
+  badAnswers = ["it", "he", "she", "they", "this", "that", "there", "these", "those", "you", "farther", "further", "much", "most", "many"]
   badAnswers.each { |b|
     if a.start_with?(b) or a.end_with?(b)
       if verbose
