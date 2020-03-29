@@ -86,7 +86,11 @@ def isValidQuestion(q, a, verbose=false)
     "Archived from the original",
     "Annual Progress Report",
     "Accessed on line",
-    "permanently deleted"
+    "permanently deleted",
+    "post",
+    "posts",
+    "comment",
+    "comments"
   ]
   badTerms.each { |b| 
     if q.include?(b)
@@ -142,7 +146,7 @@ def createQuestions(text, url, verbose=false)
     }
     if (isValidSentence(s, verbose))
       s.gsub!(/ +/, " ")
-      copulas = ["is","are","was","were","will be","should","should be","have been","has been"]
+      copulas = ["is","are","was","were","will be","should","should be","have been","has been","in","of","for","with","to","from","on","since"]
       copulaInd = nil
       copulaLen = 0
       copulas.each { |c|

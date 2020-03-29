@@ -35,7 +35,7 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
   output << imageTag
   output << "</div>"
   output << "<div class=\"explanation invisible\">"
-  output << "<p>#{explanation}</p>"
+  output << "<p>#{explanation.gsub(/href="ap(\d+).html"/,'href="http://apod.nasa.gov/apod/ap\1.html"')}</p>"
   output << "<div class=\"openlinks\">Open all links in tabs</div>"
   output << "</div>"
   output << "</div>"
