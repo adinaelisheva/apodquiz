@@ -161,7 +161,7 @@ def createQuestions(text, url, verbose=false)
       copulaLen = 0
       copulas.each { |c|
         if not copulaInd
-          copulaInd = s.index(/\b#{c}\b/)
+          copulaInd = s.index(/#{c}/)
           copulaLen = c.length
         end
       }
@@ -177,7 +177,7 @@ def createQuestions(text, url, verbose=false)
           question = "#{head}_____#{s[copulaInd...s.length]}"
           answer = part1
         elsif (len2 < 5 and not part2.include?(","))
-          question = "#{head}#{s[0..copulaInd + copulaLen]}_____"
+          question = "#{head}#{s[0..copulaInd + copulaLen - 1]}_____"
           answer = part2
         elsif verbose
           puts "Can't use - both sides are too long or include commas"
