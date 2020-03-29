@@ -3,6 +3,7 @@ def removeExtraneousStuff(text)
   retText = ""
   isInScript = false
   isInComment = false
+  isInTag = false
 
   text.each_char.with_index { |c, i|
     if (not isInScript and text[i..i+6] == "<script") 
@@ -15,7 +16,14 @@ def removeExtraneousStuff(text)
     elsif (isInComment and text[i..i+3] == "-->")
       isInComment = false
     end
-    if (not isInComment and not isInScript) 
+    if (not isInComment and not isInScript and text[i] == "<")
+      isInTag = true
+    elsif (isInTag and text[i] == ">")
+      isInTag = false
+      next
+    end
+    
+    if (not isInComment and not isInScript and not isInTag) 
       retText += c
     end
   }
@@ -68,7 +76,7 @@ def isValidSentence(s, verbose=false)
 end
 
 def isValidQuestion(q, a, verbose=false)
-  if not q or not a or q.split(" ").length <= 7
+  if not q or not a or q.split(" ").length <= 6
     if verbose and (not q or not a)
       puts "No copula, decimal, or ordinal found"
     elsif verbose
@@ -90,7 +98,9 @@ def isValidQuestion(q, a, verbose=false)
     "post",
     "posts",
     "comment",
-    "comments"
+    "comments",
+    "web sites",
+    "Discover the cosmos",
   ]
   badTerms.each { |b| 
     if q.include?(b)
@@ -138,15 +148,15 @@ def createQuestions(text, url, verbose=false)
     head = ""
     conjunctions = ["when", "and", "but", "because", "since", "if", "with", "although", "however,","furthermore,","as"]
     conjunctions.each { |c|
-      if s.downcase().start_with?(c)
-        len = c.length + 1 #add 1 for a space
+      if s.downcase().start_with?("#{c} ") or s.downcase().start_with?("#{c},")
+        len = c.length + 1 #add 1 for extra character
         head = s[0...len]
         s = s[len...s.length]
       end
     }
     if (isValidSentence(s, verbose))
       s.gsub!(/ +/, " ")
-      copulas = ["is","are","was","were","will be","should","should be","have been","has been","in","of","for","with","to","from","on","since"]
+      copulas = ["is","are","was","were","will be","should","should be","have been","has been","in","of","for","with","to","from","on","since","has","had"]
       copulaInd = nil
       copulaLen = 0
       copulas.each { |c|
@@ -256,6 +266,7 @@ def grabQuestions(text, url, verbose=false)
   text.gsub!(/ *<[^>]*> /, " ")
   text.gsub!(/<[^>]>/, "")
   text.gsub!(/\n/," ")
+  text.gsub!(/ +/," ")
 
   puts "creating questions..."
   questions = createQuestions(text, url, verbose)
