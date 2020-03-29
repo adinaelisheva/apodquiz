@@ -54,7 +54,7 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
     output << "<div class=\"question\">"
     parts = query.split("_____")
     output << "<span class=\"part\">#{parts[0]}</span><input class=\"blank\" /><span class=\"part\">#{parts[1]}</span>"
-    output << "<span class=\"hint isFakeLink\" hintid=\"#{q[2] + 1}\">[Hint]</span>"
+    output << "<span class=\"hint isFakeLink\" linkhint=\"#{q[2]}\">[Hint]</span>"
     output << "<div class=\"answer hidden\">#{answer}</div>"
     output << "</div>"
   }

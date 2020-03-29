@@ -26,20 +26,24 @@
       finished.innerText = '100% (with hints)';
     }
     finished.classList.remove('invisible');
-    const date = new Date();
 
-    // value is today's date as a string
-    const completed = getMiniDateStr(date);
-    
-    date.setTime(date.getTime() + (2*24*60*60*1000)); // Expire in 2 days from now
+    // Add completed date to cookie - value is today's date as a string
+    const completedDate = getMiniDateStr(new Date());
+    updateCookie(`${cookiename}=${completedDate}`);
+  }
+
+  function updateCookie(newCookieStr) {
+    const today = new Date();
+    // Expires today at midnight
+    const date = new Date(`${today.getMonth() + 1} ${today.getDate()} ${today.getFullYear()} 23:59:59`);
     const expires = date.toUTCString();
     
-    document.cookie = `${cookiename}=${completed}&usedhint=${usedhint};expires=${expires};path=/`;
+    document.cookie = `${newCookieStr};expires=${expires};path=/`;
   }
 
   // Also updates the usedHint variable
   function hasQuizAlreadyBeenCompleted() {
-    const cookies = document.cookie.split('&');
+    const cookies = document.cookie.split('; ');
     let ret = false;
     for (let i = 0; i < cookies.length; i++) {
       const parts = cookies[i].split('=');
@@ -133,10 +137,9 @@
 
   function revealHint(hint) {
     hint.classList.remove('isFakeLink');
-    hintid = hint.getAttribute('hintid');
-    linkHint = hintid ? `link #${hintid}` : 'the main paragraph';
-    hint.innerText = `[Check ${linkHint}]`;
+    hint.innerText = `[Check ${hint.getAttribute('linkhint')}]`;
     usedhint = 'yes';
+    updateCookie(`usedhint=${usedhint}`);
   }
 
   window.onload = () => {

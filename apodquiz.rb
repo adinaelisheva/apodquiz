@@ -25,15 +25,16 @@ explanation = apodRegex.match(content)[0].gsub("Explanation:","")
 
 # Grab a list of followup links from the explanation
 links = []
-explanation.gsub(/\n/,"").scan(/<a href="([^"]+)">/) {|link|
-  link = link[0]
-  if (not link.start_with?("http")) 
-    link = "#{apodBaseUrl}#{link}"
+explanation.gsub(/\n/,"").scan(/<a href="([^"]+)">([^<]+)</) {|link|
+  url = link[0]
+  text = link[1]
+  if (not url.start_with?("http")) 
+    url = "#{apodBaseUrl}#{url}"
   end
-  if link.start_with?("#{apodBaseUrl}image/") or link.end_with?(".jpg") or link.end_with?(".png") or link.end_with?(".gif")
+  if url.start_with?("#{apodBaseUrl}image/") or url.end_with?(".jpg") or url.end_with?(".png") or url.end_with?(".gif")
     next
   end
-  links.push(link)
+  links.push([url, text])
 }
 
 puts "found #{links.length} links"
@@ -47,12 +48,14 @@ questions = grabQuestions(explanation, apodBaseUrl)
 puts "found #{questions.length} questions"
 if (questions.length > 0) 
   puts "adding 1"
-  question = questions[0] + [0] # q[2] is the hint - here, 0 for the base url
+  question = questions[0] + ['the explanation above']
   questionsBySite.push([question])
 end
 
 # For each explanation, grab some text if there is any
-links.each.with_index {|url, ind|
+links.each.with_index {|link, ind|
+  url = link[0]
+  linkText = link[1]
   puts "fetching link #{ind+1} of #{links.length}: #{url}"
   content = `wget -q -O - "#{url}"`.force_encoding('iso-8859-1')
 
@@ -69,7 +72,7 @@ links.each.with_index {|url, ind|
   text = matchedText[0]
 
   questions = grabQuestions(text, url).map { |q|
-    q + [ind]
+    q + ["the '#{linkText}' link"]
   }
   if (questions.length > 0) 
     questionsBySite.push(questions)
