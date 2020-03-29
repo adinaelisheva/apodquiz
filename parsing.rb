@@ -101,6 +101,7 @@ def isValidQuestion(q, a, verbose=false)
     "comments",
     "web sites",
     "Discover the cosmos",
+    "Day for the answer",
   ]
   badTerms.each { |b| 
     if q.include?(b)

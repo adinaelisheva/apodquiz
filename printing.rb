@@ -1,4 +1,5 @@
 def print(apodUrl, imageTag, explanation, links, title, date, questions)
+  puts questions
   filename = ARGV[1] ? ARGV[1] : "index.html"
   puts "Deleting old #{filename} (if any)"
   `rm #{filename}`
@@ -36,7 +37,7 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
   output << "</div>"
   output << "<div class=\"explanation invisible\">"
   output << "<p>#{explanation.gsub(/href="ap(\d+).html"/,'href="http://apod.nasa.gov/apod/ap\1.html"')}</p>"
-  output << "<div class=\"openlinks\">Open all links in tabs</div>"
+  output << "<div class=\"openlinks isFakeLink\">Open all links in tabs</div>"
   output << "</div>"
   output << "</div>"
   output << "</div>"
@@ -53,6 +54,7 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
     output << "<div class=\"question\">"
     parts = query.split("_____")
     output << "<span class=\"part\">#{parts[0]}</span><input class=\"blank\" /><span class=\"part\">#{parts[1]}</span>"
+    output << "<span class=\"hint isFakeLink\" hintid=\"#{q[2] + 1}\">[Hint]</span>"
     output << "<div class=\"answer hidden\">#{answer}</div>"
     output << "</div>"
   }

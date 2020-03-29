@@ -2,6 +2,8 @@
   let score;
   let completed = 0;
   let numQs;
+  let usedhint = 'no';
+  const cookiename = 'lastcompleted';
 
   function decode(str) {
     const input = 'nopqrstuvwxyz0123456789abcdefghijklm';
@@ -18,10 +20,12 @@
     return `${m}-${d}-${date.getFullYear()}`;
   }
 
-  const cookiename = 'lastcompleted';
-
   function completeQuiz() {
-    document.querySelector('.finished').classList.remove('invisible');
+    const finished = document.querySelector('.finished');
+    if (usedhint === 'yes') {
+      finished.innerText = '100% (with hints)';
+    }
+    finished.classList.remove('invisible');
     const date = new Date();
 
     // value is today's date as a string
@@ -30,22 +34,24 @@
     date.setTime(date.getTime() + (2*24*60*60*1000)); // Expire in 2 days from now
     const expires = date.toUTCString();
     
-    document.cookie = `${cookiename}=${completed};expires=${expires};path=/`;
+    document.cookie = `${cookiename}=${completed}&usedhint=${usedhint};expires=${expires};path=/`;
   }
 
+  // Also updates the usedHint variable
   function hasQuizAlreadyBeenCompleted() {
-    const cookies = document.cookie.split('; ');
+    const cookies = document.cookie.split('&');
+    let ret = false;
     for (let i = 0; i < cookies.length; i++) {
       const parts = cookies[i].split('=');
-      if (parts[0] !== cookiename) {  
-        continue;
+      if (parts[0] === 'usedhint') {
+        usedhint = parts[1];
+      } else if (parts[0] === cookiename) {  
+        const lastDate = parts[1];
+        const today = new Date();
+        ret = lastDate === getMiniDateStr(today);
       }
-      const lastDate = parts[1];
-      const today = new Date();
-      return lastDate === getMiniDateStr(today);
     }
-    // If we got here there's no lastcompleted cookie
-    return false;
+    return ret;
   }
 
   function completeQuestion(input) {
@@ -53,6 +59,13 @@
     input.setAttribute('disabled','true');
     completed++;
     score.querySelector('span.num').innerHTML = completed;
+    
+    const hint = input.parentElement.querySelector('.hint');
+    if (hint.classList.contains('isFakeLink')) {
+      // hide unused hints
+      hint.classList.add('hidden');
+    }
+
     if (completed >= numQs) {
       completeQuiz();
     }
@@ -118,6 +131,14 @@
     }
   }
 
+  function revealHint(hint) {
+    hint.classList.remove('isFakeLink');
+    hintid = hint.getAttribute('hintid');
+    linkHint = hintid ? `link #${hintid}` : 'the main paragraph';
+    hint.innerText = `[Check ${linkHint}]`;
+    usedhint = 'yes';
+  }
+
   window.onload = () => {
     const quizAlreadyCompleted = hasQuizAlreadyBeenCompleted();
 
@@ -144,16 +165,22 @@
       }
     });
 
-    document.querySelector('.openlinks').onclick = () => {
+    document.querySelector('.openlinks').addEventListener('click', () => {
       openAllLinks();
-    };
+    });
+
+    document.querySelectorAll('.hint').forEach((hint) => {
+      hint.addEventListener('click', () => {
+        revealHint(hint);
+      });
+    });
 
     // set up mobile behavior if mobile is visible
     if (document.querySelector('.mobile').computedStyleMap().get('display').value === 'block') {
       document.querySelectorAll('button.mobile').forEach((el) => {
-        el.onclick = () => {
+        el.addEventListener('click', () => {
           switchMobileQuestion(el);
-        }
+        });
       });
 
       let first = true;
@@ -165,9 +192,9 @@
         }
       });
 
-      document.querySelector('.hide').onclick = (event) => {
+      document.querySelector('.hide').addEventListener('click', (event) => {
         toggleTextVisibility(event.target);
-      };
+      });
 
       // set up text fade-in
       window.setTimeout(() => {

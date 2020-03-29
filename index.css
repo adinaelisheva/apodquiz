@@ -15,11 +15,20 @@
 .openlinks {
   margin: 10px 0;
   color: blue;
+}
+.hint.isFakeLink {
+  color: #4040bd;
+}
+.hint{
+  font-size: 12px;
+  margin-left: 5px;
+}
+.isFakeLink {
   text-decoration: underline;
   cursor: pointer;
 }
 
-.openlinks:active {
+.isFakeLink:active {
   color: red;
 }
 

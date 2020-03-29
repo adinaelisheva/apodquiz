@@ -47,7 +47,8 @@ questions = grabQuestions(explanation, apodBaseUrl)
 puts "found #{questions.length} questions"
 if (questions.length > 0) 
   puts "adding 1"
-  questionsBySite.push([questions[0]])
+  question = questions[0] + [0] # q[2] is the hint - here, 0 for the base url
+  questionsBySite.push([question])
 end
 
 # For each explanation, grab some text if there is any
@@ -67,7 +68,9 @@ links.each.with_index {|url, ind|
   end
   text = matchedText[0]
 
-  questions = grabQuestions(text, url)
+  questions = grabQuestions(text, url).map { |q|
+    q + [ind]
+  }
   if (questions.length > 0) 
     questionsBySite.push(questions)
   end
