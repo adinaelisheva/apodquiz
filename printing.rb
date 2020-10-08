@@ -1,8 +1,11 @@
-def print(apodUrl, imageTag, explanation, links, title, date, questions)
+def print(apodUrl, imageTag, explanation, linksAndQuestions, title, date)
+  # linksAndQuestions is a list of [link, question] 
+  #   where link is [url, text]
+  #   and question is [question, answer]
   filename = ARGV[1] ? ARGV[1] : "index.html"
   puts "Deleting old #{filename} (if any)"
   `rm #{filename}`
-  
+
   puts "Creating new #{filename}"
 
   output = File.open(filename, "w")
@@ -20,8 +23,9 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
   
   output << "</head><body>"
 
-  links.each { |l|
-    output << "<a class=\"link hidden\" href=\"#{l}\">#{l}</a>"
+  linksAndQuestions.each { |data|
+    link = data[0]
+    output << "<a class=\"link hidden\" href=\"#{link[0]}\">_</a>"
   }
 
   output << "<div class=\"header invisible\">"
@@ -46,18 +50,25 @@ def print(apodUrl, imageTag, explanation, links, title, date, questions)
   output << "<div class=\"finished invisible\">100%!</div>"
 
   output << "<div class=\"questions\">"
-  output << "<button class=\"mobile\">&lt;</button>"
-  questions.each { |q|
-    query = q[0]
-    answer = q[1].downcase().tr("abcdefghijklmnopqrstuvwxyz0123456789", "nopqrstuvwxyz0123456789abcdefghijklm") #encode
+  output << "<button class=\"mobile hidden\">&lt;</button>"
+  linksAndQuestions.each { |data|
+    link = data[0]
+    question = data[1]
+    if question.length < 2 
+      next
+    end
+    query = question[0]
+    answer = question[1].downcase().tr("abcdefghijklmnopqrstuvwxyz0123456789", "nopqrstuvwxyz0123456789abcdefghijklm") #encode
+    output << "<div class=\"questionContainer hidden\">"
+    toRead = link[0] ? "the <a class=\"toRead\" href=#{link[0]}>#{link[1]}</a> link" : link[1] 
+    output << "<div class=\"readPrompt\">Read #{toRead}</div>"
     output << "<div class=\"question\">"
     parts = query.split("_____")
     output << "<span class=\"part\">#{parts[0]}</span><input class=\"blank\" /><span class=\"part\">#{parts[1]}</span>"
-    output << "<span class=\"hint isFakeLink\" linkhint=\"#{q[2]}\">[Hint]</span>"
     output << "<div class=\"answer hidden\">#{answer}</div>"
-    output << "</div>"
+    output << "</div></div>"
   }
-  output << "<button class=\"mobile\">&gt;</button>"
+  output << "<button class=\"mobile hidden\">&gt;</button>"
 
   output << "</div></div></div>"
 

@@ -39,7 +39,7 @@ explanation.gsub(/\n/,"").scan(/<a href="([^"]+)">([^<]+)</) {|link|
 
 puts "found #{links.length} links"
 
-questionsBySite = []
+linksAndQuestions = []
 
 # First grab one question from the APOD itself, if any
 puts "parsing apod"
@@ -48,11 +48,17 @@ questions = grabQuestions(explanation, apodBaseUrl)
 puts "found #{questions.length} questions"
 if (questions.length > 0) 
   puts "adding 1"
-  question = questions[0] + ['the explanation above']
-  questionsBySite.push([question])
+  question = questions[0]
+else
 end
+linksAndQuestions.push([
+  ["", "the explanation above"],
+  [questions.length > 0 ? questions[0] : []]
+])
 
-# For each explanation, grab some text if there is any
+# For each explanation, grab some text if there is any and get a question 
+# from it.
+usedAnswers = []
 links.each.with_index {|link, ind|
   url = link[0]
   linkText = link[1]
@@ -66,50 +72,26 @@ links.each.with_index {|link, ind|
     matchedText = /<body(.|\n)*<\/body[^>]*>/i.match(content)
   end
   if not matchedText
-    puts "no body found"
+    linksAndQuestions.push([link, []])
     next
   end
   text = matchedText[0]
 
-  questions = grabQuestions(text, url).map { |q|
-    q + ["the '#{linkText}' link"]
-  }
-  if (questions.length > 0) 
-    questionsBySite.push(questions)
+  questions = grabQuestions(text, url)
+  if questions.length === 0
+    linksAndQuestions.push([link, []])
+    next
   end
-}
-
-# The goal here is to get at least 1 question from every site that I can, and then to get up to 10
-# questions if possible. If there are more than 10 sites, there will be more than 10 questions. If 
-# there are less than 10 questions total from all sites then we'll only show the ones we have. In 
-# all cases this tries to draw the questions as evenly from all sites as possible, and they will be
-# mixed up together.
-finalList = []
-usedAnswers = []
-questionsBySite.each { |list|
-  q = list.pop()
+  q = questions.pop()
   while q and usedAnswers.include?(q[1])
-    q = list.pop()
+    q = questions.pop()
   end
   if q
-    finalList.push(q)
+    linksAndQuestions.push([link, q])
     usedAnswers.push(q[1])
+  else
+    linksAndQuestions.push([link, []])
   end
 }
 
-if finalList.length < 10
-  numLeft = questionsBySite.inject(0) {|sum, l| sum + l.length }
-  #don't have quite 10 questions, keep adding some
-  ind = 0
-  while numLeft > 0 and finalList.length < 10
-    q = questionsBySite[ind].pop()
-    if q and not usedAnswers.include?(q[1])
-      finalList.push(q)
-      usedAnswers.push(q[1])
-    end
-    numLeft = numLeft-1
-    ind = (ind + 1) % questionsBySite.length
-  end
-end
-
-print(apodUrl, imageTag, explanation, links, title, date, finalList.shuffle())
+print(apodUrl, imageTag, explanation, linksAndQuestions, title, date)

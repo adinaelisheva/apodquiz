@@ -85,26 +85,31 @@ def isValidQuestion(q, a, verbose=false)
     return false
   end
   a = a.downcase().strip()
+  adjustedQ = q.downcase().strip()
   badTerms = [
-    "AstroBin index",
-    "Byrd",
-    "StellaNavigator",
-    "for Windows",
+    "astrobin index",
+    "byrd",
+    "stellanavigator",
+    "for windows",
     "your comment data",
-    "Archived from the original",
-    "Annual Progress Report",
-    "Accessed on line",
+    "archived from the original",
+    "annual progress report",
+    "accessed on line",
     "permanently deleted",
     "post",
     "posts",
     "comment",
     "comments",
     "web sites",
-    "Discover the cosmos",
-    "Day for the answer",
+    "discover the cosmos",
+    "day for the answer",
+    "watch later",
+    "about us contact us",
+    "about me",
+    "buy selected items",
   ]
   badTerms.each { |b| 
-    if q.include?(b)
+    if adjustedQ.include?(b)
       if verbose
         puts "Not a valid question - includes bad term #{b}"
       end
@@ -121,7 +126,7 @@ def isValidQuestion(q, a, verbose=false)
       return false
     end
   }
-  badAnswers = ["it", "he", "she", "they", "this", "that", "there", "these", "those", "you", "farther", "further", "much", "most", "many", "after"]
+  badAnswers = ["it", "he", "she", "they", "this", "that", "there", "these", "those", "you", "farther", "further", "much", "most", "many", "after", "-"]
   badAnswers.each { |b|
     if a.start_with?(b) or a.end_with?(b)
       if verbose

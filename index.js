@@ -2,8 +2,8 @@
   let score;
   let completed = 0;
   let numQs;
-  let usedhint = 'no';
-  const cookiename = 'lastcompleted';
+  const curQCookieName = 'curq';
+  let isMobile;
 
   function decode(str) {
     const input = 'nopqrstuvwxyz0123456789abcdefghijklm';
@@ -11,51 +11,24 @@
     var translate = x => input.indexOf(x) > -1 ? output[input.indexOf(x)] : x;
     return str.split('').map(translate).join('');
   }
-  
-  function getMiniDateStr(date) {
-    let m = date.getMonth() + 1;
-    m = m.length < 2 ? `0${m}` : m;
-    let d = date.getDate();
-    d = d.length < 2 ? `0${d}` : d; 
-    return `${m}-${d}-${date.getFullYear()}`;
+
+  function updateCurQCookie(value) {
+    const d = new Date();
+    // Expire tomorrow at 1am
+    d.setDate(d.getDate() + 1);
+    d.setHours(1,0,0,0);
+    document.cookie=`${curQCookieName}=${value};expires=${d.toGMTString()}`;
   }
 
-  function completeQuiz() {
-    const finished = document.querySelector('.finished');
-    if (usedhint === 'yes') {
-      finished.innerText = '100% (with hints)';
-    }
-    finished.classList.remove('invisible');
-
-    // Add completed date to cookie - value is today's date as a string
-    const completedDate = getMiniDateStr(new Date());
-    updateCookie(`${cookiename}=${completedDate}`);
-  }
-
-  function updateCookie(newCookieStr) {
-    const today = new Date();
-    // Expires today at midnight
-    const date = new Date(`${today.getMonth() + 1} ${today.getDate()} ${today.getFullYear()} 23:59:59`);
-    const expires = date.toUTCString();
-    
-    document.cookie = `${newCookieStr};expires=${expires};path=/`;
-  }
-
-  // Also updates the usedHint variable
-  function hasQuizAlreadyBeenCompleted() {
+  function getCurrentQuestion() {
     const cookies = document.cookie.split('; ');
-    let ret = false;
     for (let i = 0; i < cookies.length; i++) {
       const parts = cookies[i].split('=');
-      if (parts[0] === 'usedhint') {
-        usedhint = parts[1];
-      } else if (parts[0] === cookiename) {  
-        const lastDate = parts[1];
-        const today = new Date();
-        ret = lastDate === getMiniDateStr(today);
+      if (parts[0] === curQCookieName) {  
+        return parseInt(parts[1]);
       }
     }
-    return ret;
+    return 0;
   }
 
   function completeQuestion(input) {
@@ -63,16 +36,33 @@
     input.setAttribute('disabled','true');
     completed++;
     score.querySelector('span.num').innerHTML = completed;
-    
-    const hint = input.parentElement.querySelector('.hint');
-    if (hint.classList.contains('isFakeLink')) {
-      // hide unused hints
-      hint.classList.add('hidden');
-    }
 
+    updateCurQCookie(completed);
+    
     if (completed >= numQs) {
       completeQuiz();
+    } else {
+      const questions = document.querySelectorAll('.questionContainer');
+      questions[completed - 1].classList.add('hidden');
+      questions[completed].classList.remove('hidden');
     }
+  }
+
+  function completeQuiz() {
+    const finished = document.querySelector('.finished');
+    finished.classList.remove('invisible');
+
+    document.querySelectorAll('.questionContainer').forEach((q) => {
+      !isMobile && q.classList.remove('hidden');
+      q.querySelector('.readPrompt').classList.add('hidden');
+    });
+
+    if (isMobile) {
+      document.querySelectorAll('button.mobile').forEach((b) => {
+        b.classList.remove('hidden');
+      });
+    }
+
   }
 
   function verifyAnswer(e) {
@@ -91,7 +81,7 @@
 
   function switchMobileQuestion(el) {
     const direction = el.innerText === '<' ? -1 : 1;
-    const questions = document.querySelectorAll('.question');
+    const questions = document.querySelectorAll('.questionContainer');
     let i = 0;
     for (; i < questions.length; i++) {
       if (!questions[i].classList.contains('hidden')) {
@@ -135,64 +125,54 @@
     }
   }
 
-  function revealHint(hint) {
-    hint.classList.remove('isFakeLink');
-    hint.innerText = `[Check ${hint.getAttribute('linkhint')}]`;
-    usedhint = 'yes';
-    updateCookie(`usedhint=${usedhint}`);
-  }
-
   window.onload = () => {
-    const quizAlreadyCompleted = hasQuizAlreadyBeenCompleted();
+    isMobile = document.body.clientWidth < 600;
 
-    const questions = document.querySelectorAll('input.blank');
+    const questions = document.querySelectorAll('.questionContainer');
     numQs = questions.length;
     
     score = document.querySelector('.score');
     score.querySelector('.whole').innerText = numQs;
+
+    const curQ = getCurrentQuestion();
+    const quizAlreadyCompleted = curQ >= numQs;
     
-    questions.forEach((input) => {
-      const answerDiv = input.parentElement.querySelector('.answer');
+    if (!quizAlreadyCompleted) {
+      questions[curQ].classList.remove('hidden');
+    }
+        
+    for (let i = 0; i < numQs; i++) {
+      const question = questions[i];
+      const input = question.querySelector('input');
+      const answerDiv = question.querySelector('.answer');
       const answer = answerDiv.innerText.toLowerCase().trim();
       answerDiv.innerHTML = answer;
       
       const width = Math.max(40, answer.length*10);
       input.setAttribute('style', `width:${width}px;`);
 
-      if (quizAlreadyCompleted) {
+      if (quizAlreadyCompleted || i < curQ) {
+        if (quizAlreadyCompleted) {
+          question.classList.remove('hidden');
+        }
         input.value = decode(answer);
         completeQuestion(input);
       } else {
         // No point in setting a listener if the input is already completed
         input.onkeyup = (e) => { verifyAnswer(e); };
       }
-    });
+    };
 
     document.querySelector('.openlinks').addEventListener('click', () => {
       openAllLinks();
     });
 
-    document.querySelectorAll('.hint').forEach((hint) => {
-      hint.addEventListener('click', () => {
-        revealHint(hint);
-      });
-    });
-
     // set up mobile behavior if mobile is visible
-    if (document.querySelector('.mobile').computedStyleMap().get('display').value === 'block') {
+    if (isMobile) {
       document.querySelectorAll('button.mobile').forEach((el) => {
         el.addEventListener('click', () => {
           switchMobileQuestion(el);
         });
-      });
-
-      let first = true;
-      document.querySelectorAll('.question').forEach((el) => {
-        if (first) {
-          first = false;
-        } else {
-          el.classList.add('hidden');
-        }
       });
 
       document.querySelector('.hide').addEventListener('click', (event) => {

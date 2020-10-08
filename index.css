@@ -14,22 +14,20 @@
 
 .openlinks {
   margin: 10px 0;
-  color: blue;
 }
-.hint.isFakeLink {
-  color: #4040bd;
+
+a, .isFakeLink {
+  color: #348185;
 }
-.hint{
-  font-size: 12px;
-  margin-left: 5px;
-}
+
 .isFakeLink {
   text-decoration: underline;
   cursor: pointer;
 }
 
+a:active,
 .isFakeLink:active {
-  color: red;
+  color: #9b50be;
 }
 
 h1 {
@@ -94,8 +92,12 @@ h1 {
   margin: 20px 0;
 }
 
+.quiz {
+  margin-bottom: 50px;
+}
+
 @media (max-width: 600px) {
-  .mobile {
+  .mobile:not(.hidden) {
     display: block;
   }
   body {
@@ -125,9 +127,6 @@ h1 {
   div {
     color: white;
   }
-  a, .isFakeLink, .hint.isFakeLink {
-    color: rgb(203, 252, 255);
-  }
   .header, .explanation, .quiz, .hide {
     background: rgba(100,100,100,0.6);
     border-radius: 30px;
@@ -148,9 +147,6 @@ h1 {
   .finished {
     margin-bottom: 1px;
     color: rgb(118, 255, 6);
-  }
-  .quiz {
-    margin-bottom: 50px;
   }
   .questions {
     padding: 0 10px 10px;
