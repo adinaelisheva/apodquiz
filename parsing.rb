@@ -104,9 +104,14 @@ def isValidQuestion(q, a, verbose=false)
     "discover the cosmos",
     "day for the answer",
     "watch later",
-    "about us contact us",
+    "about us",
+    "contact us",
     "about me",
     "buy selected items",
+    "privacy policy",
+    "terms of service",
+    "is provided for",
+    "individual replies"
   ]
   badTerms.each { |b| 
     if adjustedQ.include?(b)
@@ -265,7 +270,7 @@ def createQuestions(text, url, verbose=false)
     # (this may lead to lower quality questions, but repeats are even worse)
     questions.shuffle()
   else
-    questions.sort { |a, b| b[0].length <=> a[0].length }
+    questions.sort! { |a, b| b[0].length <=> a[0].length }
   end
   return questions
 end
