@@ -1,14 +1,16 @@
 def print(apodUrl, imageTag, explanation, linksAndQuestions, title, date)
+  wd = "~/public/apodquiz"
+
   # linksAndQuestions is a list of [link, question] 
   #   where link is [url, text]
   #   and question is [question, answer]
   filename = ARGV[1] ? ARGV[1] : "index.html"
   puts "Deleting old #{filename} (if any)"
-  `rm #{filename}`
+  `rm #{wd}#{filename}`
 
   puts "Creating new #{filename}"
 
-  output = File.open(filename, "w")
+  output = File.open("#{wd}#{filename}", "w")
   
   printdate = "#{date[2..3]}/#{date[4..5]}/#{date[0..1]}"
 

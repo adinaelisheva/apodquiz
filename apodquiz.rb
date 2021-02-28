@@ -1,3 +1,5 @@
+#!/usr/bin/ruby
+
 apodRegex = /Explanation:(.|\n)*<center>/
 apodImageParagraphOpeningString = "Discover the cosmos!</a>Each day a different image or photograph of our fascinating universe isfeatured, along with a brief explanation written by a professional astronomer."
 apodImageParagraphRegex = /#{apodImageParagraphOpeningString} *<p>[\d\w ]*<br>(.|\n)*Credit/
