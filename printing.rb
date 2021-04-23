@@ -24,6 +24,9 @@ def print(apodUrl, imageTag, explanation, linksAndQuestions, title, date)
   output << "<link href=\"index.css\" type=\"text/css\" rel=\"stylesheet\">"  
   
   output << "</head><body>"
+  output << "<div class=\"imageOrVideo\">"
+  output << imageTag
+  output << "</div>"
 
   linksAndQuestions.each { |data|
     link = data[0]
@@ -37,9 +40,6 @@ def print(apodUrl, imageTag, explanation, linksAndQuestions, title, date)
 
   output << "<div class=\"main\">"
   output << "<div class=\"apod\">"
-  output << "<div class=\"imageOrVideo\">"
-  output << imageTag
-  output << "</div>"
   output << "<div class=\"explanation invisible\">"
   output << "<p>#{explanation.gsub(/href="ap(\d+).html"/,'href="http://apod.nasa.gov/apod/ap\1.html"')}</p>"
   output << "<div class=\"openlinks isFakeLink\">Open all links in tabs</div>"

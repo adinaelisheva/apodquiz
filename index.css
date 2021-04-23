@@ -110,13 +110,16 @@ h1 {
     left: 0;
     right: 0;
     overflow: auto;
-    z-index: -1;
     background: black;
   }
   .imageOrVideo img,
   .imageOrVideo iframe {
     height: 100%;
     width: auto;
+  }
+  .header, .explanation, .quiz {
+    z-index: 1;
+    position: relative;
   }
   .header h1 {
     display: none;
