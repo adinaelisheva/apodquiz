@@ -1,5 +1,10 @@
 #!/usr/bin/ruby
 
+# WARNING: With no arguments, this script grabs the date off the server, which late at night will be
+# ahead of the APOD servers and thus try to grab tomorrow's APOD before it's posted. If you're testing
+# this in the evening and you get a nil error when trying to access the wget'd content... that's why.
+# Pass in an explicit date and you'll be good to go.
+
 apodRegex = /Explanation:(.|\n)*<center>/
 apodImageParagraphOpeningString = "Discover the cosmos!</a>Each day a different image or photograph of our fascinating universe isfeatured, along with a brief explanation written by a professional astronomer."
 apodImageParagraphRegex = /#{apodImageParagraphOpeningString} *<p>[\d\w ]*<br>(.|\n)*Credit/
